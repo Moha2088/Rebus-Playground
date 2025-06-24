@@ -3,6 +3,7 @@ using Order.API.EventHandlers;
 using Rebus.Activation;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
+using Shared.Messaging.Events.IntegrationEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ activator.Register(() => new CheckoutProductHandler(logger));
 var subscriber = Configure.With(activator)
     .Transport(transport => transport.UseRabbitMq(builder.Configuration["RabbitMQ:ConnectionString"], "product-queue"))
     .Start();
+
+await subscriber.Subscribe<ProductCheckoutEvent>();
 
 #endregion
 
