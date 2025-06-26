@@ -14,6 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AutoRegisterHandlersFromAssemblyOf<Program>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,9 +26,9 @@ if (app.Environment.IsDevelopment())
 }
 
 #region RebusConfig Sub
-var logger = app.Services.GetRequiredService<ILogger>();
+//var logger = app.Services.GetRequiredService<ILogger>();
 using var activator = new BuiltinHandlerActivator();
-activator.Register(() => new CheckoutProductHandler(logger));
+activator.Register(() => new CheckoutProductHandler());
 
 var subscriber = Configure.With(activator)
     .Transport(transport => transport.UseRabbitMq(builder.Configuration["RabbitMQ:ConnectionString"], "product-queue"))
