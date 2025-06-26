@@ -3,12 +3,12 @@ using Shared.Messaging.Events.IntegrationEvents;
 
 namespace Order.API.EventHandlers;
 
-public class CheckoutProductHandler : IHandleMessages<ProductCheckoutEvent>
+public class CheckoutProductEventHandler : IHandleMessages<ProductCheckoutEvent>
 {
     private readonly ILogger _logger;
 
 
-    public CheckoutProductHandler()
+    public CheckoutProductEventHandler()
     {
         //_logger = logger;
     }

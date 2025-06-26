@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
 #region RebusConfig Sub
 //var logger = app.Services.GetRequiredService<ILogger>();
 using var activator = new BuiltinHandlerActivator();
-activator.Register(() => new CheckoutProductHandler());
+activator.Register(() => new CheckoutProductEventHandler());
 
 var subscriber = Configure.With(activator)
     .Transport(transport => transport.UseRabbitMq(builder.Configuration["RabbitMQ:ConnectionString"], "product-queue"))

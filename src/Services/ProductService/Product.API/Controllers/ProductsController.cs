@@ -35,9 +35,8 @@ public class ProductsController : ControllerBase
     [HttpPost]  
     public async Task<IActionResult> CheckoutProduct(CheckoutProductCommand command)
     {
-        var checkoutEvent = command.FromCommand();
-        await _bus.Publish(checkoutEvent);
-        _logger.LogInformation($"Published event with Id: {checkoutEvent.Name} at {checkoutEvent.OcurredOn}");
+        await _bus.Send(command);
+        _logger.LogInformation($"Sent command with Id: {command.Id}, Name: {command.Name}");
         return Ok();
     }
 }
