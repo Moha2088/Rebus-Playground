@@ -1,4 +1,5 @@
 using Rebus.Config;
+using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +25,12 @@ builder.Services.AddRebus(configure =>
             configure.Transport(transport =>
                 transport.UseRabbitMqAsOneWayClient(builder.Configuration["RabbitMQ:ConnectionString"]))
             .Routing(route =>
-                route.TypeBased().MapAssemblyOf<Program>("product-queue")));
+                route.TypeBased().MapAssemblyOf<Program>("product-queue"))
+            .Options(opt =>
+            {
+                opt.RetryStrategy(maxDeliveryAttempts: 10);
+                opt.SetBusName("Product MessageBus");
+            }));
 
 builder.Services.AutoRegisterHandlersFromAssemblyOf<Program>();
 
