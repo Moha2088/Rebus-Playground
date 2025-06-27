@@ -10,6 +10,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMediatR(opt =>
+{
+    var assembly = typeof(Program).Assembly;
+
+    opt.RegisterServicesFromAssembly(assembly);
+
+});
+
 #region RebusConfig Pub
 
 builder.Services.AddRebus(configure =>
@@ -17,6 +25,8 @@ builder.Services.AddRebus(configure =>
                 transport.UseRabbitMqAsOneWayClient(builder.Configuration["RabbitMQ:ConnectionString"]))
             .Routing(route =>
                 route.TypeBased().MapAssemblyOf<Program>("product-queue")));
+
+builder.Services.AutoRegisterHandlersFromAssemblyOf<Program>();
 
 #endregion
 

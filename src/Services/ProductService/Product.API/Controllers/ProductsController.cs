@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 using Shared.Messaging.Events.IntegrationEvents;
 
 namespace Product.API.Controllers;
 
 public record CheckoutProductCommand(
-        Guid Id,
         String Name,
         string Description,
         List<string> OrderItems,
         DateTimeOffset OrderDate,
-        decimal Price)
+        decimal Price) : IRequest
 {
     public ProductCheckoutEvent FromCommand()
     {
-        return new ProductCheckoutEvent(Guid.NewGuid(), this.Name, this.Description, this.OrderItems, this.OrderDate,
+        return new ProductCheckoutEvent(this.Name, this.Description, this.OrderItems, this.OrderDate,
             this.Price);
     }
 }
@@ -23,20 +23,20 @@ public record CheckoutProductCommand(
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly IBus _bus;
+    private ISender _sender;
     private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(IBus bus, ILogger<ProductsController> logger)
+    public ProductsController(ISender sender, ILogger<ProductsController> logger)
     {
-        _bus = bus;
+        _sender = sender;
         _logger = logger;
     }
 
     [HttpPost]  
-    public async Task<IActionResult> CheckoutProduct(CheckoutProductCommand command)
+    public async Task<IActionResult> CheckoutProduct(CheckoutProductCommand command, CancellationToken cancellationToken)
     {
-        await _bus.Send(command);
-        _logger.LogInformation($"Sent command with Id: {command.Id}, Name: {command.Name}");
+        await _sender.Send(command, cancellationToken);
+        _logger.LogInformation($"Sent command with Name: {command.Name}");
         return Ok();
     }
 }

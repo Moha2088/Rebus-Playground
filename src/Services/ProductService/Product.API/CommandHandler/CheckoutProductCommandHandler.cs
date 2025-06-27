@@ -1,10 +1,10 @@
-﻿using Product.API.Controllers;
+﻿using MediatR;
+using Product.API.Controllers;
 using Rebus.Bus;
-using Rebus.Handlers;
 
 namespace Product.API.CommandHandler;
 
-public class CheckoutProductCommandHandler : IHandleMessages<CheckoutProductCommand>
+public class CheckoutProductCommandHandler : IRequestHandler<CheckoutProductCommand>
 {
     private readonly IBus _bus;
 
@@ -14,10 +14,11 @@ public class CheckoutProductCommandHandler : IHandleMessages<CheckoutProductComm
         _bus = bus;
     }
 
-    public async Task Handle(CheckoutProductCommand command)
+
+    public async Task Handle(CheckoutProductCommand command, CancellationToken cancellationToken)
     {
         var checkoutEvent = command.FromCommand();
         await _bus.Publish(checkoutEvent);
-        Console.WriteLine($"Published event with Id: {checkoutEvent.Id}, Name: {checkoutEvent.Name}");
+        Console.WriteLine($"Published event with Id: {checkoutEvent.Id}, Name: {checkoutEvent.Name}, at: {checkoutEvent.OcurredOn}");
     }
 }

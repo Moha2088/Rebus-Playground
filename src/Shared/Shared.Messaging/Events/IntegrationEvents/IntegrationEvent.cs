@@ -2,7 +2,7 @@
 
 public record IntegrationEvent
 {
-    public Guid Guid = Guid.NewGuid();
+    public Guid Id = Guid.NewGuid();
 
     public DateTimeOffset OcurredOn => DateTimeOffset.Now;
 
