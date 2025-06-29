@@ -7,11 +7,13 @@ namespace Product.API.CommandHandler;
 public class CheckoutProductCommandHandler : IRequestHandler<CheckoutProductCommand>
 {
     private readonly IBus _bus;
+    private readonly ILogger<CheckoutProductCommandHandler> _logger;
 
 
-    public CheckoutProductCommandHandler(IBus bus)
+    public CheckoutProductCommandHandler(IBus bus, ILogger<CheckoutProductCommandHandler> logger)
     {
         _bus = bus;
+        _logger = logger;
     }
 
 
@@ -19,6 +21,6 @@ public class CheckoutProductCommandHandler : IRequestHandler<CheckoutProductComm
     {
         var checkoutEvent = command.FromCommand();
         await _bus.Publish(checkoutEvent);
-        Console.WriteLine($"Published event with Id: {checkoutEvent.Id}, Name: {checkoutEvent.Name}, at: {checkoutEvent.OcurredOn}");
+        _logger.LogInformation($"Published event with Id: {checkoutEvent.Id}, Name: {checkoutEvent.Name}, at: {checkoutEvent.OcurredOn}");
     }
 }

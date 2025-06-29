@@ -21,11 +21,15 @@ builder.Services.AddMediatR(opt =>
 
 #region RebusConfig Pub
 
+var services = new ServiceCollection();
+services.AddLogging();
+
 builder.Services.AddRebus(configure =>
             configure.Transport(transport =>
                 transport.UseRabbitMqAsOneWayClient(builder.Configuration["RabbitMQ:ConnectionString"]))
             .Routing(route =>
                 route.TypeBased().MapAssemblyOf<Program>("product-queue"))
+            .Logging(logging => logging.Console())
             .Options(opt =>
             {
                 opt.RetryStrategy(maxDeliveryAttempts: 10);

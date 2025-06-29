@@ -14,7 +14,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+#region RebusConfig Sub
+
 builder.Services.AutoRegisterHandlersFromAssemblyOf<Program>();
+
+builder.Services.AddLogging();
+builder.Services.AddTransient<CheckoutProductEventHandler>();
+
+builder.Services.AddRebus(configure =>
+    configure.Transport(transport =>
+        transport.UseRabbitMq(builder.Configuration["RabbitMQ:ConnectionString"], "product-queue"))
+    .Logging(logging => logging.Console())
+    .Options(opt => opt.SetBusName("Order MessageBus")),
+    
+    onCreated: async bus =>
+    {
+        await bus.Subscribe<ProductCheckoutEvent>();
+    });
+
+#endregion
 
 var app = builder.Build();
 
@@ -24,22 +43,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-#region RebusConfig Sub
-using var activator = new BuiltinHandlerActivator();
-activator.Register(() => new CheckoutProductEventHandler());
-
-var subscriber = Configure.With(activator)
-    .Transport(transport => transport.UseRabbitMq(builder.Configuration["RabbitMQ:ConnectionString"], "product-queue"))
-    .Options(opt =>
-    {
-        opt.SetBusName("Order MessageBus");
-    })
-    .Start();
-
-await subscriber.Subscribe<ProductCheckoutEvent>();
-
-#endregion
 
 app.UseHttpsRedirection();
 
