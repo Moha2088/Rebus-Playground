@@ -32,7 +32,7 @@ public class ProductsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]  
+    [HttpPost("checkout")]  
     public async Task<IActionResult> CheckoutProduct(CheckoutProductCommand command, CancellationToken cancellationToken)
     {
         await _sender.Send(command, cancellationToken);

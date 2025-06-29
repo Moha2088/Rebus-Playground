@@ -15,6 +15,6 @@ public class CheckoutProductEventHandler : IHandleMessages<ProductCheckoutEvent>
 
     public async Task Handle(ProductCheckoutEvent message)
     {
-        Console.WriteLine($"Received message, ID: {message.Id}, Name:  {message.Name} at {message.OcurredOn}");
+        Console.WriteLine($"Received message,\nID: {message.Id}\nName:  {message.Name}\nDescription: {message.Description}\nPrice: {message.Price} at {message.OcurredOn.AddHours(2)}");
     }
 }

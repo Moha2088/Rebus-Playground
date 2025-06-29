@@ -32,8 +32,6 @@ builder.Services.AddRebus(configure =>
                 opt.SetBusName("Product MessageBus");
             }));
 
-builder.Services.AutoRegisterHandlersFromAssemblyOf<Program>();
-
 #endregion
 
 var app = builder.Build();
