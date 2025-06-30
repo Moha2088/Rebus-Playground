@@ -1,9 +1,11 @@
 
 using Order.API.EventHandlers;
-using Rebus.Activation;
 using Rebus.Config;
-using Rebus.Routing.TypeBased;
+using Serilog;
+using Shared.Configurations;
 using Shared.Messaging.Events.IntegrationEvents;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,25 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
+#region ElasticSearch
+
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var sinkOptions = ElasticSearchConfigurations.ConfigureElastic(builder.Configuration, environment!);
+
+Log.Logger = new LoggerConfiguration()
+.Enrich.FromLogContext()
+.Enrich.WithProperty("Environment", environment)
+.MinimumLevel.Information()
+.WriteTo.Debug()
+.WriteTo.Console()
+.WriteTo.Elasticsearch(sinkOptions)
+.CreateLogger();
+
+builder.Host.UseSerilog();
+
+#endregion
 
 #region RebusConfig Sub
 
@@ -43,6 +63,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.UseHttpsRedirection();
 

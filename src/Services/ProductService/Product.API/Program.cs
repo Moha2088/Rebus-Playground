@@ -1,6 +1,15 @@
+
+
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Rebus.Config;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
+using Serilog;
+using Shared.Configurations;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,13 +20,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddMediatR(opt =>
 {
     var assembly = typeof(Program).Assembly;
-
     opt.RegisterServicesFromAssembly(assembly);
 
 });
+
+#region ElasticSearch
+
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var sinkOptions = ElasticSearchConfigurations.ConfigureElastic(builder.Configuration, environment!);
+
+Log.Logger = new LoggerConfiguration()
+.Enrich.FromLogContext()
+.Enrich.WithProperty("Environment", environment)
+.MinimumLevel.Information()
+.WriteTo.Debug()
+.WriteTo.Console()
+.WriteTo.Elasticsearch(sinkOptions)
+.CreateLogger();
+
+builder.Host.UseSerilog();
+
+#endregion
 
 #region RebusConfig Pub
 
@@ -46,6 +74,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+});
 
 app.UseHttpsRedirection();
 
