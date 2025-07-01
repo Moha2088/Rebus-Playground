@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Product.API.Controllers;
+using Product.API.Commands;
 using Rebus.Bus;
 
 namespace Product.API.CommandHandler;

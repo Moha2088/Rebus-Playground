@@ -1,23 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Rebus.Bus;
-using Shared.Messaging.Events.IntegrationEvents;
+using Product.API.Commands;
 
 namespace Product.API.Controllers;
 
-public record CheckoutProductCommand(
-        String Name,
-        string Description,
-        List<string> OrderItems,
-        DateTimeOffset OrderDate,
-        decimal Price) : IRequest
-{
-    public ProductCheckoutEvent FromCommand()
-    {
-        return new ProductCheckoutEvent(this.Name, this.Description, this.OrderItems, this.OrderDate,
-            this.Price);
-    }
-}
 
 [Route("api/products")]
 [ApiController]
