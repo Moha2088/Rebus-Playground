@@ -20,7 +20,7 @@ builder.Services.AddHealthChecks();
 #region ElasticSearch
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-var sinkOptions = ElasticSearchConfigurations.ConfigureElastic(builder.Configuration, environment!);
+var sinkOptions = ElasticSearchConfigurations.ConfigureElastic(environment!);
 
 Log.Logger = new LoggerConfiguration()
 .Enrich.FromLogContext()

@@ -22,6 +22,12 @@ services:
     image: docker.elastic.co/kibana/kibana:9.0.2
         
 
+  yarpgateway:
+    image: ${DOCKER_REGISTRY-}yarpgateway
+    build:
+      context: .
+      dockerfile: Gateway/YarpGateway/Dockerfile
+
 networks:
   elastic:
     driver: bridge

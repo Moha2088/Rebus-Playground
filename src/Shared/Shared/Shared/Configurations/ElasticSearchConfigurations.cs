@@ -9,7 +9,7 @@ namespace Shared.Configurations;
 /// </summary>
 public static class ElasticSearchConfigurations
 {
-    public static ElasticsearchSinkOptions ConfigureElastic(IConfiguration con, string environmentName)
+    public static ElasticsearchSinkOptions ConfigureElastic(string environmentName)
     {
         var callingAssembly = Assembly.GetCallingAssembly().GetName().Name!;
         Console.WriteLine($" ---- - ------------- -------- --------- Caller: {callingAssembly}");

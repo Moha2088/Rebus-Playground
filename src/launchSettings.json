@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "order.api": "StartDebugging",
-        "product.api": "StartDebugging"
+        "product.api": "StartDebugging",
+        "yarpgateway": "StartDebugging"
       }
     }
   }
